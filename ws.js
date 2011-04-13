@@ -1,12 +1,12 @@
 var ws = require("websocket-server");
 
 var server = ws.createServer();
-var connections=[];
+var connectionIds=[];
 
 function update() {
-    if (connections.length) {
-        connections.forEach(function(connection) {
-            connection.send(new Date());
+    if (connectionIds.length) {
+        connectionIds.forEach(function(id) {
+            server.send(id,new Date());
         });
     }
     setTimeout(update, 1000);
@@ -15,8 +15,8 @@ function update() {
 setTimeout(update, 1000);
 
 server.addListener("connection", function(connection) {
-    connection.send("hello");
-    connections.push(connection); 
+    connection.send("hello " + connection.id);
+    connectionIds.push(connection.id); 
   });
 
 server.listen(8080);
