@@ -3,11 +3,20 @@
 <script type="text/javascript">
 $(document).ready(function(){
   var webSocket;
-  var name;
+  var name = "Screen";
+  var players = [];
 
+  function addPlayer(player) {
+    console.log("adding player !");
+    // todo trim player length
+    players.push(player);
+    $('#player' + players.length).html(player);
+  }
+  
   webSocket = new WebSocket('ws://127.0.0.1:8080/');
   
   webSocket.onopen = function() {
+      webSocket.send('{"screen":"' + name + '"}');
       $('#console').addClass("green");
       $('#console').removeClass("red");
       $('#console').html('Connection opened.');
@@ -15,9 +24,12 @@ $(document).ready(function(){
 
   webSocket.onmessage = function(event) {
       json = JSON.parse(event.data);
-      if (json.newQuestion) {
-        $("#wait").hide("fast");
-        $("#showbutton").show("fast");
+      if (json.player) {
+          console.log(json.player);
+        if (players.length < 4) {
+          console.log("adding player");
+          addPlayer(json.player);
+        }
       }
   };
 
@@ -33,20 +45,6 @@ $(document).ready(function(){
       $('#console').html('<a href="#" onclick="window.location.reload()">Error !</a>');
     };  
 
-  $("form").submit(function () { 
-    name = $("#name").val();
-    webSocket.send('{"name":"' + name + '"}');
-    $("#showname").hide("fast");
-    $("#showbutton").show("fast");
-    return false; 
-  });
-  
-  $("#button").click(function () {
-    webSocket.send('{"answer":"' + name + '"}');
-    $("#showbutton").hide("fast");
-    $("#wait").show("fast");
-  });
-
 });
   </script>
   <style>
@@ -54,31 +52,29 @@ $(document).ready(function(){
   	padding: 0;
   	margin: 0;
   }
-  #wrapper {
-    height:100%;
-    margin-bottom:-22px;
-  }
-  input {
-    -webkit-border-radius: 5px; 
-    -moz-border-radius: 5px; 
-    border-radius: 5px;
+  .player {
+    width:25%;
     font-size: 3em;
-    text-align: center;
+    text-align:center;   
+    float:left;
   }
-  #showname {
-    padding-top:100px;
-    text-align: center;
+  #player1 {
+    background:blue;
   }
-  #showbutton {
-    padding-top:30%;
-    display: none;
-    text-align: center;
+  #player2 {
+    left:25%;
+    background:green;
   }
-  #wait {
-    padding-top:30%;
-    font-size: 3em;
-    display: none;
-    text-align: center;    
+  #player3 {
+    left:50%;
+    background:yellow;
+  }
+  #player4 {
+    left:75%;
+    background:orange;
+  }
+  #content{
+    overflow:hidden;
   }
   .red {
     color: #FFFFFF;
@@ -89,29 +85,36 @@ $(document).ready(function(){
     background:#00CC66;
   }
   #console {
+    text-decoration: none;
     text-align: center;
     font-size: 1.2em;
     font-family: "Courier New", monospace;
     height:22px;
+    width:100%;
   }
   </style>
 </head>
 <body>
   <div id="wrapper">
-    <div id="showname">
-      <form>
-        <input id="name" type="input" /><br/>
-      </form>
+    <header>
+      <h1>Questions</h1>
+    </header>
+    <div id="content">
+      <div class="player" id="player1">
+        --
+      </div>
+      <div class="player"  id="player2">
+        --
+      </div>
+      <div class="player"  id="player3">
+        --
+      </div>
+      <div class="player"  id="player4">
+        --
+      </div>
+    </div> 
+    <div id="console">
     </div>
-    <div id="showbutton">
-        <img id="button" src="green-200.png">
-    </div>
-    <div id="wait">
-      Wait for next question.
-    </div>
-  </div>
-  <div id="console" class="red">
-    not connected
   </div>
 </body>
 </html>

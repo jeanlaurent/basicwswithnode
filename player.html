@@ -35,7 +35,7 @@ $(document).ready(function(){
 
   $("form").submit(function () { 
     name = $("#name").val();
-    webSocket.send('{"name":"' + name + '"}');
+    webSocket.send('{"player":"' + name + '"}');
     $("#showname").hide("fast");
     $("#showbutton").show("fast");
     return false; 
@@ -89,6 +89,7 @@ $(document).ready(function(){
     background:#00CC66;
   }
   #console {
+    text-decoration: none;
     text-align: center;
     font-size: 1.2em;
     font-family: "Courier New", monospace;
@@ -104,7 +105,7 @@ $(document).ready(function(){
       </form>
     </div>
     <div id="showbutton">
-        <img id="button" src="green-200.png">
+        <img id="button" src="green-200.png" alt="button">
     </div>
     <div id="wait">
       Wait for next question.
