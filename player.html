@@ -1,0 +1,117 @@
+<html><head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  var webSocket;
+  var name;
+
+  webSocket = new WebSocket('ws://127.0.0.1:8080/');
+  
+  webSocket.onopen = function() {
+      $('#console').addClass("green");
+      $('#console').removeClass("red");
+      $('#console').html('Connection opened.');
+  };
+
+  webSocket.onmessage = function(event) {
+      json = JSON.parse(event.data);
+      if (json.newQuestion) {
+        $("#wait").hide("fast");
+        $("#showbutton").show("fast");
+      }
+  };
+
+  webSocket.onclose = function() {
+      $('#console').removeClass("green");
+      $('#console').addClass("red");
+      $('#console').html('<a href="#" onclick="window.location.reload()">Connection closed.</a>');
+  };
+
+  webSocket.onerror = function() {
+      $('#console').removeClass("green");
+      $('#console').addClass("red");
+      $('#console').html('<a href="#" onclick="window.location.reload()">Error !</a>');
+    };  
+
+  $("form").submit(function () { 
+    name = $("#name").val();
+    webSocket.send('{"name":"' + name + '"}');
+    $("#showname").hide("fast");
+    $("#showbutton").show("fast");
+    return false; 
+  });
+  
+  $("#button").click(function () {
+    webSocket.send('{"answer":"' + name + '"}');
+    $("#showbutton").hide("fast");
+    $("#wait").show("fast");
+  });
+
+});
+  </script>
+  <style>
+  html, body {
+  	padding: 0;
+  	margin: 0;
+  }
+  #wrapper {
+    height:100%;
+    margin-bottom:-22px;
+  }
+  input {
+    -webkit-border-radius: 5px; 
+    -moz-border-radius: 5px; 
+    border-radius: 5px;
+    font-size: 3em;
+    text-align: center;
+  }
+  #showname {
+    padding-top:100px;
+    text-align: center;
+  }
+  #showbutton {
+    padding-top:30%;
+    display: none;
+    text-align: center;
+  }
+  #wait {
+    padding-top:30%;
+    font-size: 3em;
+    display: none;
+    text-align: center;    
+  }
+  .red {
+    color: #FFFFFF;
+    background:#FF0033;
+  }
+  .green {
+    color: #000000;
+    background:#00CC66;
+  }
+  #console {
+    text-align: center;
+    font-size: 1.2em;
+    font-family: "Courier New", monospace;
+    height:22px;
+  }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <div id="showname">
+      <form>
+        <input id="name" type="input" /><br/>
+      </form>
+    </div>
+    <div id="showbutton">
+        <img id="button" src="green-200.png">
+    </div>
+    <div id="wait">
+      Wait for next question.
+    </div>
+  </div>
+  <div id="console" class="red">
+    not connected
+  </div>
+</body>
+</html>
