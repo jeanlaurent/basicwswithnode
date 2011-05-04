@@ -31,6 +31,12 @@ $(document).ready(function(){
           addPlayer(json.player);
         }
       }
+      if (json.reset) {
+        window.location.reload();
+      }
+      if(json.newQuestion) {
+        $('#title').html(json.newQuestion);
+      }
   };
 
   webSocket.onclose = function() {
@@ -97,7 +103,7 @@ $(document).ready(function(){
 <body>
   <div id="wrapper">
     <header>
-      <h1>Questions</h1>
+      <h1 id="title">Questions</h1>
     </header>
     <div id="content">
       <div class="player" id="player1">

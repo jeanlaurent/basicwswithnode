@@ -19,13 +19,9 @@ $(document).ready(function(){
         $("#showbutton").hide("fast");
         $("#wait").show("fast");
       }
-      if (json.newQuestion) {
-        $("#question").html(json.newQuestion);
+      if (json.newQuestion || json.ready) {
         $("#wait").hide("fast");
         $("#showbutton").show("fast");
-      }
-      if (json.reset) {
-        window.location.reload();
       }
   };
 
@@ -43,17 +39,18 @@ $(document).ready(function(){
 
   $("form").submit(function () { 
     name = $("#name").val();
-    $("#wait").html(name + "<br/> wait for next question.");
-    webSocket.send('{"player":"' + name + '"}');
-    $("#showname").hide("fast");
-    $("#wait").show("fast");
+    webSocket.send('{"newQuestion":"' + name + '"}');
     return false; 
   });
   
-  $("#button").click(function () {
-    webSocket.send('{"answer":"' + name + '"}');
-    $("#showbutton").hide("fast");
-    $("#wait").show("fast");
+  $("#reset").click(function () {
+    webSocket.send('{"reset":"true"}');
+    return false;
+  });
+
+  $("#wait").click(function () {
+    webSocket.send('{"wait":"true"}');
+    return false;
   });
 
 });
@@ -83,12 +80,6 @@ $(document).ready(function(){
     display: none;
     text-align: center;
   }
-  #wait {
-    padding-top:30%;
-    font-size: 3em;
-    display: none;
-    text-align: center;    
-  }
   .red {
     color: #FFFFFF;
     background:#FF0033;
@@ -110,15 +101,13 @@ $(document).ready(function(){
   <div id="wrapper">
     <div id="showname">
       <form>
+        <label for="name">Question</label>
         <input id="name" type="input" /><br/>
       </form>
-    </div>
-    <div id="showbutton">
-        <p id="question"></p>
-        <img id="button" src="green-200.png" alt="button">
-    </div>
-    <div id="wait">
-      Wait for next question.
+      <p>
+      <a id="wait" href="#">Wait</a><br/><br/><br/><br/>
+      <a id="reset" href="#">Reset</a><br/>
+      </p>
     </div>
   </div>
   <div id="console" class="red">
